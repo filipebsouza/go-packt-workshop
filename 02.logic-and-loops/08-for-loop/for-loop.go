@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func main() {
 	for i := 0; i < 5; i++ {
@@ -21,5 +24,18 @@ func main() {
 
 	for key, value := range config {
 		fmt.Println(key, "=", value)
+	}
+
+	// Empty for
+	for {
+		r := rand.Intn(8)
+		if r%3 == 0 {
+			fmt.Println("Skip")
+			continue
+		} else if r%2 == 0 {
+			fmt.Println("Stop")
+			break
+		}
+		fmt.Println(r)
 	}
 }
