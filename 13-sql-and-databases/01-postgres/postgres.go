@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -13,12 +12,14 @@ var db1 sql.DB
 
 func main() {
 	pterm.DefaultBigText.WithLetters(
-		pterm.NewLettersFromString("Postgresql teste")).Render()
+		pterm.NewLettersFromString("PSQL")).Render()
 
 	if isConected, _ := initConnection(); !isConected {
-		fmt.Println()
+		pterm.Error.Println("Erro ao conectar com o banco.")
 		os.Exit(1)
 	}
+
+	createTable()
 
 	db, err := sql.Open("postgres", `user=postgres password=changeme 
 		host=127.0.0.1 port=5432 dbname=postgres sslmode=disable`)
@@ -32,6 +33,33 @@ func main() {
 	if connectivity != nil {
 		panic(err)
 	}
+
+}
+
+func initConnection() (bool, error) {
+	db, err := createConnection()
+	defer db.Close()
+
+	if err != nil {
+		return false, err
+	}
+
+	connectivity := db.Ping()
+	if connectivity != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func createConnection() (*sql.DB, error) {
+	return sql.Open("postgres", `user=postgres password=changeme 
+		host=127.0.0.1 port=5432 dbname=postgres sslmode=disable`)
+}
+
+func createTable() {
+	db, err := createConnection()
+	defer db.Close()
 
 	DBCreate := ` 
 	CREATE TABLE public.test 
@@ -48,25 +76,8 @@ func main() {
 	`
 	_, err = db.Exec(DBCreate)
 	if err != nil {
-		panic(err)
+		pterm.Error.Println("Erro ao criar a tabela")
 	} else {
-		fmt.Println("The table was successfully created!")
+		pterm.Success.Println("Tabela criada com sucesso!")
 	}
-}
-
-func initConnection() (bool, error) {
-	db, err := sql.Open("postgres", `user=postgres password=changeme 
-		host=127.0.0.1 port=5432 dbname=postgres sslmode=disable`)
-	defer db.Close()
-
-	if err != nil {
-		return false, err
-	}
-
-	connectivity := db.Ping()
-	if connectivity != nil {
-		return false, err
-	}
-
-	return true, nil
 }
