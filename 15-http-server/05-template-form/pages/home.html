@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="/statics/style.css" />
+</head>
+<body>
+{{if .Name }}
+<p>Welcome {{ .Name }}</p>
+{{else}}
+<p>Welcome</p>
+{{end}}
+</body>
+</html>
